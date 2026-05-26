@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management System</title>
+    <!-- CSS File Link -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h2>Attendance Management System</h2>
+    </header>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-section">
+        <div class="card">
+            <h3>Login</h3>
+            <span id="login-msg" class="msg"></span>
+            <div class="form-group">
+                <label>Role:</label>
+                <select id="login-role" onchange="updateLoginPlaceholder()">
+                    <option value="admin">Admin</option>
+                    <option value="faculty">Faculty</option>
+                    <option value="student">Student</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label id="id-label">Username:</label>
+                <input type="text" id="login-user" placeholder="Enter ID">
+            </div>
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" id="login-pass" placeholder="Enter Password">
+            </div>
+            <button onclick="handleLogin()">Login</button>
+        </div>
+        <div class="default-info">
+            <p>Default Admin: <strong>admin</strong> / <strong>admin123</strong></p>
+            <p>Default Faculty: <strong>faculty</strong> / <strong>123</strong></p>
+            <p>Default Student: <strong>101</strong> / <strong>123</strong></p>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div id="admin-dashboard" class="hidden">
+        <div class="top-bar">
+            <h3>Admin Dashboard</h3>
+            <button class="danger" onclick="logout()">Logout</button>
+        </div>
+        
+        <div id="admin-msg" class="success-msg"></div>
+
+        <div class="nav-buttons">
+            <button class="secondary" onclick="showAdminTab('add-faculty')">Add Faculty</button>
+            <button class="secondary" onclick="showAdminTab('view-users')">View All Users</button>
+        </div>
+
+        <!-- 1. Add Faculty -->
+        <div id="admin-tab-add-faculty" class="admin-tab">
+            <div class="card">
+                <h4>Create New Faculty Account</h4>
+                <div class="form-group">
+                    <label>Faculty Name:</label>
+                    <input type="text" id="new-fac-name">
+                </div>
+                <div class="form-group">
+                    <label>Username:</label>
+                    <input type="text" id="new-fac-user">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="text" id="new-fac-pass">
+                </div>
+                <button onclick="addFaculty()">Add Faculty</button>
+            </div>
+        </div>
+
+        <!-- 2. View All Users -->
+        <div id="admin-tab-view-users" class="admin-tab hidden">
+            <h4>Faculty List</h4>
+            <table id="admin-fac-table">
+                <thead><tr><th>Name</th><th>Username</th><th>Password</th></tr></thead>
+                <tbody></tbody>
+            </table>
+            <br>
+            <h4>Student List</h4>
+            <table id="admin-stud-table">
+                <thead><tr><th>Name</th><th>Roll No</th><th>Password</th><th>Batch</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- FACULTY DASHBOARD -->
+    <div id="faculty-dashboard" class="hidden">
+        <div class="top-bar">
+            <h3>Faculty Dashboard: <span id="fac-welcome-name"></span></h3>
+            <button class="danger" onclick="logout()">Logout</button>
+        </div>
+        
+        <div id="faculty-msg" class="success-msg"></div>
+
+        <div class="nav-buttons">
+            <button class="secondary" onclick="showFacultyTab('create-batch')">Create Batch</button>
+            <button class="secondary" onclick="showFacultyTab('manage-students')">Manage Students</button>
+            <button class="secondary" onclick="showFacultyTab('mark-att')">Mark Attendance</button>
+            <button class="secondary" onclick="showFacultyTab('reports')">Reports</button>
+        </div>
+
+        <!-- 1. Create Batch -->
+        <div id="tab-create-batch" class="faculty-tab">
+            <div class="card">
+                <h4>Create New Batch</h4>
+                <div class="form-group">
+                    <label>Batch Name (e.g., CS-A):</label>
+                    <input type="text" id="batch-name">
+                </div>
+                <div class="form-group">
+                    <label>Subject:</label>
+                    <input type="text" id="batch-subject">
+                </div>
+                <button onclick="createBatch()">Create Batch</button>
+            </div>
+            <h4>My Batches:</h4>
+            <table id="batch-table">
+                <thead><tr><th>ID</th><th>Name</th><th>Subject</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- 2. Manage Students -->
+        <div id="tab-manage-students" class="faculty-tab hidden">
+            <div class="card">
+                <h4>Add Student</h4>
+                <div class="form-group">
+                    <label>Select Batch:</label>
+                    <select id="student-batch-select"></select>
+                </div>
+                <div class="form-group">
+                    <label>Student Name:</label>
+                    <input type="text" id="new-student-name">
+                </div>
+                <div class="form-group">
+                    <label>Roll Number:</label>
+                    <input type="text" id="new-student-roll">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="text" id="new-student-pass">
+                </div>
+                <button onclick="addStudent()">Add Student</button>
+            </div>
+            
+            <h4>Current Students</h4>
+            <table id="student-list-table">
+                <thead><tr><th>Roll No</th><th>Name</th><th>Batch</th><th>Action</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- 3. Mark Attendance -->
+        <div id="tab-mark-att" class="faculty-tab hidden">
+            <div class="card">
+                <h4>Mark Attendance</h4>
+                <span id="att-msg" class="msg"></span>
+                <div class="form-group">
+                    <label>Select Batch:</label>
+                    <select id="att-batch-select" onchange="loadStudentsForAtt()"></select>
+                </div>
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="date" id="att-date">
+                </div>
+                <button onclick="loadAttendanceSheet()">Load Students</button>
+            </div>
+            
+            <div id="att-sheet-container" class="hidden">
+                <table id="att-sheet">
+                    <thead><tr><th>Roll No</th><th>Name</th><th>Present</th><th>Absent</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+                <br>
+                <button onclick="submitAttendance()">Submit Attendance</button>
+            </div>
+        </div>
+
+        <!-- 4. Reports -->
+        <div id="tab-reports" class="faculty-tab hidden">
+            <h4>All Attendance Records</h4>
+            <table id="report-table">
+                <thead><tr><th>Date</th><th>Batch</th><th>Student</th><th>Status</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- STUDENT DASHBOARD -->
+    <div id="student-dashboard" class="hidden">
+        <div class="top-bar">
+            <h3>Student Dashboard</h3>
+            <button class="danger" onclick="logout()">Logout</button>
+        </div>
+        
+        <div class="card profile-card">
+            <h4>My Profile</h4>
+            <p><strong>Name:</strong> <span id="p-name"></span></p>
+            <p><strong>Roll Number:</strong> <span id="p-roll"></span></p>
+            <p><strong>Batch:</strong> <span id="p-batch"></span></p>
+            <p><strong>Subject:</strong> <span id="p-subject"></span></p>
+        </div>
+        
+        <div class="card perf-card">
+            <h4>Performance</h4>
+            <p><strong>Total Classes:</strong> <span id="s-total">0</span></p>
+            <p><strong>Present:</strong> <span id="s-present">0</span></p>
+            <p><strong>Attendance %:</strong> <span id="s-perc">0</span>%</p>
+        </div>
+
+        <h4>My Attendance History</h4>
+        <table id="student-history-table">
+            <thead><tr><th>Date</th><th>Subject</th><th>Status</th></tr></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- JS File Link -->
+<script src="script.js"></script>
+</body>
+</html>
